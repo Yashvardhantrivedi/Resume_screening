@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ResumeRank — AI HR Resume Screening (MVP)
 
-## Getting Started
+Local-first resume screening app: create a job opening, bulk-upload resumes (PDF/DOCX/TXT), and get every candidate parsed, ATS-scored, ranked, and explained.
 
-First, run the development server:
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # paste your Groq API key (optional but recommended)
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No external services needed — data lives in `data/hr_evaluator.db` (SQLite) and uploaded files in `data/uploads/`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## AI parsing (multi-provider)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Configure any one provider in `.env.local`: **Groq**, **OpenAI**, **Anthropic Claude**, **Ollama** (local Llama), or any OpenAI-compatible API — see [.env.example](.env.example) and [DEPLOYMENT.md](DEPLOYMENT.md) for all options. Without a key, a deterministic rule engine (regex + skill dictionary) is used — everything still works, explanations are just less nuanced.
 
-## Learn More
+Docker deployment and handover instructions (image export, env configuration, backups): [DEPLOYMENT.md](DEPLOYMENT.md).
 
-To learn more about Next.js, take a look at the following resources:
+## ATS scoring (out of 100)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Component | Weight |
+|---|---|
+| Keyword match (mandatory 2x nice-to-have) | 30 |
+| Skills match (required 3x preferred, alias-aware: Express ≈ Node.js) | 25 |
+| Experience vs minimum | 15 |
+| Education (degree 7 + CGPA 3) | 10 |
+| Project relevance (LLM-judged when available) | 10 |
+| Resume structure (sections, contact info) | 5 |
+| Formatting (length, bullets) | 5 |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Features
 
-## Deploy on Vercel
+- Job openings with required/preferred skills, experience, degrees, CGPA, keywords
+- Drag-and-drop bulk upload, batched processing, duplicate detection (content hash)
+- Candidate ranking table with search + filters (status, score, experience)
+- Per-candidate detail: score breakdown bars, strengths/gaps/suggestions, parsed profile, resume download
+- Dashboard: totals, skill pie, experience bars, score histogram, education chart, top candidates
+- CSV export (all or shortlisted only)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 16 (App Router) · TypeScript · Tailwind 4 · better-sqlite3 · pdf-parse · mammoth · Recharts · groq-sdk

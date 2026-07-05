@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    # Groq key yahan se container me jaati hai (.env.local repo me hi rehta hai, image me nahi)
+    env_file:
+      - .env.local
+    volumes:
+      # SQLite DB + uploaded resumes persist across container restarts
+      - hr_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  hr_data:
