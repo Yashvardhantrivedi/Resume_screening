@@ -1,5 +1,7 @@
 # ResumeRank — AI HR Resume Screening (MVP)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 Local-first resume screening app: create a job opening, bulk-upload resumes (PDF/DOCX/TXT), and get every candidate parsed, ATS-scored, ranked, and explained.
 
 ## Quick start
@@ -41,4 +43,12 @@ Docker deployment and handover instructions (image export, env configuration, ba
 
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind 4 · better-sqlite3 · pdf-parse · mammoth · Recharts · groq-sdk
+Next.js 16 (App Router) · TypeScript · Tailwind 4 · better-sqlite3 · pdf-parse · mammoth · Recharts
+
+## Contributing
+
+Issues and pull requests are welcome. To develop locally: `npm install`, `cp .env.example .env.local` (add an API key from any supported provider, or leave empty for rule-based mode), `npm run dev`.
+
+## License
+
+[MIT](LICENSE) — free to use, modify, and distribute with attribution.
