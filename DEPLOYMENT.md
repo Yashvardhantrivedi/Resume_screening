@@ -56,7 +56,21 @@ docker compose down      # stop (data is kept)
 docker compose up -d     # start again
 ```
 
-## Option C: Publish to a registry (for teams)
+## Option C: Host on Railway (public URL, ~5 minutes)
+
+Railway runs the Dockerfile from GitHub directly and supports persistent volumes (required — this app stores its SQLite DB and resume files on disk, which is why serverless hosts like Vercel/Netlify return 500s on the API routes).
+
+1. Go to https://railway.app → **Login with GitHub**.
+2. **New Project → Deploy from GitHub repo** → pick this repository. Railway auto-detects the Dockerfile and builds.
+3. Open the service → **Variables** → add:
+   - `GROQ_API_KEY` (or any provider key — see table below)
+   - `RAILWAY_RUN_UID` = `0` (lets the app write to the mounted volume)
+4. Right-click the service → **Attach Volume** → mount path: `/app/data`.
+5. **Settings → Networking → Generate Domain** (port 3000). Open the URL — done.
+
+Data persists in the volume across restarts and redeploys. Pushing to GitHub `main` auto-redeploys.
+
+## Option D: Publish to a registry (for teams)
 
 ```bash
 docker tag resumerank yourcompany/resumerank:1.0
