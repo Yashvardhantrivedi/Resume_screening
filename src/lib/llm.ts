@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ParsedResume, Job } from "./types";
 import { parseWithRules } from "./parser";
+import { getSetting } from "./db";
 
 /**
  * Provider-agnostic LLM layer.
@@ -49,7 +50,20 @@ const DEFAULTS: Record<
   },
 };
 
+/** Settings saved from the in-app Settings page (SQLite) win over env vars. */
+function dbSetting(key: string): string | null {
+  try {
+    return getSetting(key);
+  } catch {
+    return null; // DB not reachable (e.g. during build) — fall back to env
+  }
+}
+
 function getProvider(): Provider {
+  const fromDb = (dbSetting("llm_provider") ?? "").trim().toLowerCase();
+  if (fromDb === "none") return "none";
+  if (fromDb in DEFAULTS) return fromDb as Provider;
+
   const p = (process.env.LLM_PROVIDER ?? "").trim().toLowerCase();
   if (p === "none") return "none";
   if (p in DEFAULTS) return p as Provider;
@@ -64,9 +78,14 @@ function getConfig() {
   const provider = getProvider();
   if (provider === "none") return null;
   const d = DEFAULTS[provider];
-  const apiKey = process.env.LLM_API_KEY || process.env[d.keyEnv] || "";
-  const model = process.env.LLM_MODEL || process.env.GROQ_MODEL || d.model;
-  const base = process.env.LLM_BASE_URL || d.base;
+  const apiKey =
+    dbSetting("llm_api_key") ||
+    process.env.LLM_API_KEY ||
+    process.env[d.keyEnv] ||
+    "";
+  const model =
+    dbSetting("llm_model") || process.env.LLM_MODEL || process.env.GROQ_MODEL || d.model;
+  const base = dbSetting("llm_base_url") || process.env.LLM_BASE_URL || d.base;
   // Ollama runs keyless; every remote provider needs a key.
   if (!apiKey && provider !== "ollama" && provider !== "custom") return null;
   if (provider === "custom" && (!base || !model)) return null;
@@ -79,6 +98,40 @@ export function llmAvailable(): boolean {
 
 export function llmProviderName(): string {
   return getConfig()?.provider ?? "none";
+}
+
+/** Public snapshot of the effective config for the Settings UI (key masked). */
+export function llmConfigSummary() {
+  const cfg = getConfig();
+  const savedInDb = Boolean(dbSetting("llm_provider") || dbSetting("llm_api_key"));
+  if (!cfg) return { provider: "none", model: null, base_url: null, key_hint: null, source: savedInDb ? "ui" : "env" };
+  return {
+    provider: cfg.provider,
+    model: cfg.model,
+    base_url: cfg.base || null,
+    key_hint: cfg.apiKey ? `...${cfg.apiKey.slice(-4)}` : null,
+    source: savedInDb ? "ui" : "env",
+  };
+}
+
+/** Fire a minimal round-trip to verify the configured provider/key works. */
+export async function testLlm(): Promise<{ ok: boolean; provider: string; model?: string; error?: string }> {
+  const cfg = getConfig();
+  if (!cfg) return { ok: false, provider: "none", error: "No provider configured" };
+  try {
+    const res = (await chatJSON(
+      'You are a connection test. Respond ONLY with the JSON object {"ok": true}',
+      "ping"
+    )) as { ok?: boolean };
+    return { ok: res?.ok === true, provider: cfg.provider, model: cfg.model };
+  } catch (err) {
+    return {
+      ok: false,
+      provider: cfg.provider,
+      model: cfg.model,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
 }
 
 /** Pull a JSON object out of a model response, tolerating code fences and prose. */

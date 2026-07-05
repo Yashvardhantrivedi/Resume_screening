@@ -47,5 +47,8 @@ next-env.d.ts
 # exported docker images (too large for git)
 *.tar.gz
 
+# electron-builder output
+/dist-desktop
+
 # local editor/agent config
 /.claude

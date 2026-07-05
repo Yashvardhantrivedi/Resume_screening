@@ -4,6 +4,12 @@
 
 Local-first resume screening app: create a job opening, bulk-upload resumes (PDF/DOCX/TXT), and get every candidate parsed, ATS-scored, ranked, and explained.
 
+## Desktop app (Mac & Windows)
+
+Download the installer from [Releases](https://github.com/HarshGcode/Resume_screening/releases) — `.dmg` for macOS, `.exe` for Windows. Install, open, go to **Settings** in the sidebar, and paste your own AI provider key (Groq/OpenAI/Anthropic — or run fully offline with the rule engine). All data stays on your computer.
+
+> Installers are unsigned: on macOS right-click the app → Open the first time; on Windows click "More info → Run anyway".
+
 ## Quick start
 
 ```bash

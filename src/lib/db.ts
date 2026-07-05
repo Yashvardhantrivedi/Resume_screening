@@ -2,7 +2,9 @@ import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+// DATA_DIR override lets the desktop (Electron) build store data in the OS
+// user-data folder instead of the app bundle, which is read-only when installed.
+const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "data");
 export const UPLOADS_DIR = path.join(DATA_DIR, "uploads");
 
 let db: Database.Database | null = null;
@@ -47,8 +49,32 @@ export function getDb(): Database.Database {
 
     CREATE INDEX IF NOT EXISTS idx_candidates_job ON candidates(job_id);
     CREATE INDEX IF NOT EXISTS idx_candidates_score ON candidates(job_id, ats_score DESC);
+
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
   `);
   return db;
+}
+
+export function getSetting(key: string): string | null {
+  const row = getDb().prepare("SELECT value FROM settings WHERE key = ?").get(key) as
+    | { value: string }
+    | undefined;
+  return row?.value ?? null;
+}
+
+export function setSetting(key: string, value: string): void {
+  getDb()
+    .prepare(
+      "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
+    )
+    .run(key, value);
+}
+
+export function deleteSetting(key: string): void {
+  getDb().prepare("DELETE FROM settings WHERE key = ?").run(key);
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

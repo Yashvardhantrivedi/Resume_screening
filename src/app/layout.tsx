@@ -63,6 +63,12 @@ export default function RootLayout({
               >
                 ➕ New Job
               </Link>
+              <Link
+                href="/settings"
+                className="block rounded-md px-3 py-2 hover:bg-slate-800 hover:text-white"
+              >
+                ⚙️ Settings
+              </Link>
             </nav>
             <div className="px-5 py-4 text-[11px] text-slate-500 border-t border-slate-800">
               Local MVP · SQLite + AI

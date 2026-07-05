@@ -1,0 +1,53 @@
+name: Build desktop installers
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            artifact: "dist-desktop/*.dmg"
+          - os: windows-latest
+            artifact: "dist-desktop/*.exe"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js and prepare desktop bundle
+        run: |
+          npm run build
+          npx electron-rebuild -f -w better-sqlite3
+          node scripts/prepare-desktop.mjs
+
+      - name: Build installer
+        run: npx electron-builder --publish never
+        env:
+          # unsigned builds — no certificates configured
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.os }}
+          path: ${{ matrix.artifact }}
+
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

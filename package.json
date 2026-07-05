@@ -1,12 +1,17 @@
 {
   "name": "hr_evaluator",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "desktop:prepare": "next build && electron-rebuild -f -w better-sqlite3 && node scripts/prepare-desktop.mjs",
+    "desktop:build": "npm run desktop:prepare && electron-builder --publish never",
+    "desktop:dev": "electron .",
+    "postdesktop:build": "npm rebuild better-sqlite3"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
@@ -20,14 +25,56 @@
     "recharts": "^3.9.2"
   },
   "devDependencies": {
+    "@electron/rebuild": "^4.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "electron": "^43.0.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "build": {
+    "appId": "com.harshgupta.resumerank",
+    "productName": "ResumeRank",
+    "npmRebuild": false,
+    "files": [
+      "electron/**"
+    ],
+    "extraResources": [
+      {
+        "from": ".next/standalone",
+        "to": "app"
+      }
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["arm64", "x64"]
+        }
+      ],
+      "category": "public.app-category.business",
+      "identity": null
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "output": "dist-desktop"
+    }
   }
 }
