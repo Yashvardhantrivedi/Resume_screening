@@ -39,7 +39,7 @@
     "typescript": "^5"
   },
   "build": {
-    "appId": "com.harshgupta.resumerank",
+    "appId": "com.yashvardhantrivedi.resumerank",
     "productName": "ResumeRank",
     "npmRebuild": false,
     "files": [

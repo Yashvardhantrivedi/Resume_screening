@@ -2,13 +2,13 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Website & downloads: https://resumerank-site.vercel.app** · [Live demo](https://resumescreening-production-e90f.up.railway.app) · [Releases](https://github.com/HarshGcode/Resume_screening/releases)
+**Website & downloads: https://resumerank-site.vercel.app** · [Live demo](https://resumescreening-production-e90f.up.railway.app) · [Releases](https://github.com/YashVardhanTrivedi/Resume_screening/releases)
 
 Local-first resume screening app: create a job opening, bulk-upload resumes (PDF/DOCX/TXT), and get every candidate parsed, ATS-scored, ranked, and explained.
 
 ## Desktop app (Mac & Windows)
 
-Download the installer from [Releases](https://github.com/HarshGcode/Resume_screening/releases) — `.dmg` for macOS, `.exe` for Windows. Install, open, go to **Settings** in the sidebar, and paste your own AI provider key (Groq/OpenAI/Anthropic — or run fully offline with the rule engine). All data stays on your computer.
+Download the installer from [Releases](https://github.com/YashVardhanTrivedi/Resume_screening/releases) — `.dmg` for macOS, `.exe` for Windows. Install, open, go to **Settings** in the sidebar, and paste your own AI provider key (Groq/OpenAI/Anthropic — or run fully offline with the rule engine). All data stays on your computer.
 
 > Installers are unsigned: on macOS right-click the app → Open the first time; on Windows click "More info → Run anyway".
 
@@ -30,15 +30,15 @@ Docker deployment and handover instructions (image export, env configuration, ba
 
 ## ATS scoring (out of 100)
 
-| Component | Weight |
-|---|---|
-| Keyword match (mandatory 2x nice-to-have) | 30 |
-| Skills match (required 3x preferred, alias-aware: Express ≈ Node.js) | 25 |
-| Experience vs minimum | 15 |
-| Education (degree 7 + CGPA 3) | 10 |
-| Project relevance (LLM-judged when available) | 10 |
-| Resume structure (sections, contact info) | 5 |
-| Formatting (length, bullets) | 5 |
+| Component                                                            | Weight |
+| -------------------------------------------------------------------- | ------ |
+| Keyword match (mandatory 2x nice-to-have)                            | 30     |
+| Skills match (required 3x preferred, alias-aware: Express ≈ Node.js) | 25     |
+| Experience vs minimum                                                | 15     |
+| Education (degree 7 + CGPA 3)                                        | 10     |
+| Project relevance (LLM-judged when available)                        | 10     |
+| Resume structure (sections, contact info)                            | 5      |
+| Formatting (length, bullets)                                         | 5      |
 
 ## Features
 
