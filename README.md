@@ -2,7 +2,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Website & downloads: https://resumerank-site.vercel.app** · [Live demo](https://resumescreening-production-e90f.up.railway.app) · [Releases](https://github.com/YashVardhanTrivedi/Resume_screening/releases)
 
 Local-first resume screening app: create a job opening, bulk-upload resumes (PDF/DOCX/TXT), and get every candidate parsed, ATS-scored, ranked, and explained.
 
